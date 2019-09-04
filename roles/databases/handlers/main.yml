@@ -1,0 +1,5 @@
+    - name: restarted_databases
+      service: 
+        name: mariadb 
+        state: restarted
+      

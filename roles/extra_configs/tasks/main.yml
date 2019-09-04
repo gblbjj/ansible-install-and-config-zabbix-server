@@ -3,26 +3,34 @@
     state: disabled
 
 - name: validate ports scapade zabbix-server
-  shell: 'firewall-cmd --list-all | grep tcp | cut -d: -f2 | xargs -n 1'
+  shell: 'firewall-cmd --list-all | grep 10050 | cut -d"/" -f1 |  cut -d":" -f2'
   register: service_firewall
-
+  
 
 - name: stop service firewalld
   shell: 'firewall-cmd --permanent --add-port=10050/tcp ; firewall-cmd --permanent --add-port=10051/tcp ; firewall-cmd --permanent --add-port=80/tcp && firewall-cmd --reload'
-  when: service_firewall.stdout != "tcp"   
+  when: service_firewall.stdout.find('10050') == -1
 
 - name: restart to finish config firewalld
   service:
     name: firewalld
     state: restarted 
-  when:  service_firewall.stdout != "tcp"   
-    
+  when: service_firewall.stdout.find('10050') == -1  
+   
+  
+
 - name: config hostname
   hostname:
     name: lab-zabbix-server
-    
-- name: reboot to load configs 
+
+- name: validate hostname
+  command: hostname
+  register: v_hostname
+      
+
+- name: reboot_system
   reboot:
     test_command: whoami 
     reboot_timeout: 600 
     msg: Reboot initiated by Ansible 
+  when: v_hostname.stdout != "lab-zabbix-server"

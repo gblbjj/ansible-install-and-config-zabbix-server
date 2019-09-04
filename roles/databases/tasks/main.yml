@@ -21,12 +21,13 @@
   copy: 
     src: files/my.cnf
     dest: /etc/
-    mode: 0644          
+    mode: 0644     
+  notify: restarted_databases     
 
-- name: restart databases
-  service:
-    name: mariadb
-    state: restarted
+# - name: restart databases
+#   service:
+#     name: mariadb
+#     state: restarted
 
 
 
