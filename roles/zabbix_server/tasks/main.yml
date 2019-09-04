@@ -1,0 +1,49 @@
+- name: install packages zabbix-server
+  yum:  
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - zabbix-server-mysql 
+    - zabbix-web-mysql 
+    - zabbix-proxy-mysql 
+    - zabbix-agent
+
+- name: import  config to databases in zabbix
+  command: /bin/bash -c  "zcat /usr/share/doc/zabbix-server-mysql-4.0.12/create.sql.gz | mysql -uzabbix -pzabbix zabbix" 
+  when: "{{ condition | default('false') }}"
+  
+- name: remove files zabbix connections databases
+  become: yes
+  command:  rm -rf /etc/zabbix/zabbix_server.conf  
+
+
+- name: Upload archive  default
+  become: yes
+  copy: 
+    src: files/zabbix_server.conf
+    dest: /etc/zabbix/
+    mode: 0644        
+
+- name: remove files zabbix.conf connections databases
+  become: yes
+  command:  rm -rf /etc/httpd/conf.d/zabbix.conf
+
+
+- name: Upload archive  default
+  become: yes
+  copy: 
+    src: files/zabbix.conf
+    dest: /etc/httpd/conf.d/
+    mode: 0644            
+
+- name: start zabbix-server
+  service:
+    name: zabbix-server
+    state: started
+    enabled: yes
+    
+
+- name: restart apache
+  service: 
+    name: httpd
+    state: restarted    

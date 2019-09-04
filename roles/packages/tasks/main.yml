@@ -1,0 +1,41 @@
+- name: install packages default to lab in host
+  yum:  
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - httpd
+    - curl
+    - wget 
+    - vim 
+    - yum-utils
+    - git
+    - net-tools
+    - mariadb-server 
+    - MySQL-python
+    - mariadb
+    - php 
+    - php-pdo
+    - php-mysql
+   
+
+- name: started packages 
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: started packages 
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+    
+
+- name:   check services requires
+  shell: "systemctl status htttpd | sed -n 3p | awk '/active/ {print $2}' ; systemctl status mariadb | sed -n 3p | awk '/active/ {print $2}'"
+  register: service_status
+
+- name: check start
+  shell: "systemctl start httpd && systemctl start mariadb"
+  when: service_status.stdout == "inactive"       
+            

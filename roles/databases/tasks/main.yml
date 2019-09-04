@@ -1,0 +1,35 @@
+- name: create usar to databases
+  mysql_user: 
+    name: zabbix
+    host: localhost
+    password: zabbix
+    priv: '*.*:ALL'
+    state: present
+
+- name: create database teste
+  mysql_db:
+    name: zabbix
+    state: present 
+
+         
+- name: open bind conf mysql for connectors remote
+  become: yes
+  command:  rm -rf /etc/my.cnf
+  
+- name: Upload archive my.cnf default
+  become: yes
+  copy: 
+    src: files/my.cnf
+    dest: /etc/
+    mode: 0644          
+
+- name: restart databases
+  service:
+    name: mariadb
+    state: restarted
+
+
+
+
+
+

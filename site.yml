@@ -1,0 +1,11 @@
+- name: install zabbix-server
+  hosts: zabbix
+  remote_user: gabriel
+  become: yes
+  pre_tasks:
+  roles:  
+    - extra_configs
+    - repos
+    - packages
+    - databases
+    - zabbix_server
