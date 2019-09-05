@@ -7,6 +7,8 @@
   register: service_firewall
   
 
+    
+    
 - name: stop service firewalld
   shell: 'firewall-cmd --permanent --add-port=10050/tcp ; firewall-cmd --permanent --add-port=10051/tcp ; firewall-cmd --permanent --add-port=80/tcp && firewall-cmd --reload'
   when: service_firewall.stdout.find('10050') == -1
